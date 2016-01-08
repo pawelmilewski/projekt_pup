@@ -51,7 +51,7 @@ LCD_E_PORT &= ~LCD_E;
 LCD_E_PORT |= LCD_E;
 _LCD_OutNibble(dataToWrite);
 LCD_E_PORT &= ~LCD_E;
-_delay_ms(200);
+_delay_ms(500);
 }
 //-------------------------------------------------------------------------------------------------
 //

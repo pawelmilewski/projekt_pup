@@ -68,11 +68,18 @@ int main(void)
 	PORTE=0x3C;
 	DDRB=0xFD; 
 	PORTB=0xFD;
-	
-	SK1_EN_0;
+
+	SK1_EN_1;
 	SK1_DIR_1;
-	SK2_EN_0;
+	SK2_EN_1;
 	SK2_DIR_1;
+
+				LCD_Initalize();
+				LCD_Clear();
+				LCD_Home();
+				LCD_WriteText("love");
+				LCD_GoTo(0,1);
+				LCD_WriteText("love2");
 
 	for(;;)
 	{
@@ -82,10 +89,7 @@ int main(void)
 		_delay_us(300);
 		SK1_STEP_0;
 		SK2_STEP_0;*/
-				LCD_Clear();
-				LCD_Home();
-				LCD_Initalize();
-				LCD_WriteText("love");
-				LCD_GoTo(0,1);
+
+
 	}
 }

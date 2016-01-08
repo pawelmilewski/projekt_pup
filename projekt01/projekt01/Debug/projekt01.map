@@ -285,7 +285,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000      0x1fe
+.text           0x00000000      0x20a
  *(.vectors)
  .vectors       0x00000000       0x8c D:/Zainstalowane/Atmel/Studio/7.0/Packs/Atmel/ATmega_DFP/1.0.91/gcc/dev/atmega128/avr51/crtatmega128.o
                 0x00000000                __vector_default
@@ -381,36 +381,36 @@ END GROUP
                 0x000000b8       0x2a src/HD44780.o
                 0x000000b8                _LCD_OutNibble
  .text._LCD_Write
-                0x000000e2       0x26 src/HD44780.o
+                0x000000e2       0x2c src/HD44780.o
                 0x000000e2                _LCD_Write
  .text.LCD_WriteCommand
-                0x00000108        0x6 src/HD44780.o
-                0x00000108                LCD_WriteCommand
- .text.LCD_WriteData
                 0x0000010e        0x6 src/HD44780.o
-                0x0000010e                LCD_WriteData
+                0x0000010e                LCD_WriteCommand
+ .text.LCD_WriteData
+                0x00000114        0x6 src/HD44780.o
+                0x00000114                LCD_WriteData
  .text.LCD_WriteText
-                0x00000114       0x1c src/HD44780.o
-                0x00000114                LCD_WriteText
+                0x0000011a       0x1c src/HD44780.o
+                0x0000011a                LCD_WriteText
  .text.LCD_GoTo
-                0x00000130        0xe src/HD44780.o
-                0x00000130                LCD_GoTo
+                0x00000136        0xe src/HD44780.o
+                0x00000136                LCD_GoTo
  .text.LCD_Clear
-                0x0000013e       0x12 src/HD44780.o
-                0x0000013e                LCD_Clear
+                0x00000144       0x12 src/HD44780.o
+                0x00000144                LCD_Clear
  .text.LCD_Home
-                0x00000150       0x12 src/HD44780.o
-                0x00000150                LCD_Home
+                0x00000156       0x12 src/HD44780.o
+                0x00000156                LCD_Home
  .text.LCD_Initalize
-                0x00000162       0x70 src/HD44780.o
-                0x00000162                LCD_Initalize
- .text.main     0x000001d2       0x28 src/main.o
-                0x000001d2                main
-                0x000001fa                . = ALIGN (0x2)
+                0x00000168       0x70 src/HD44780.o
+                0x00000168                LCD_Initalize
+ .text.main     0x000001d8       0x2e src/main.o
+                0x000001d8                main
+                0x00000206                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x000001fa        0x0 d:/zainstalowane/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/avr51\libgcc.a(_exit.o)
-                0x000001fa                _exit
-                0x000001fa                exit
+ .fini9         0x00000206        0x0 d:/zainstalowane/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/avr51\libgcc.a(_exit.o)
+                0x00000206                _exit
+                0x00000206                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -429,39 +429,39 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x000001fa        0x4 d:/zainstalowane/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/avr51\libgcc.a(_exit.o)
+ .fini0         0x00000206        0x4 d:/zainstalowane/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/avr51\libgcc.a(_exit.o)
  *(.fini0)
-                0x000001fe                _etext = .
+                0x0000020a                _etext = .
 
-.data           0x00800100        0x6 load address 0x000001fe
+.data           0x00800100        0xc load address 0x0000020a
                 0x00800100                PROVIDE (__data_start, .)
  *(.data)
  *(.data*)
  *(.rodata)
  *(.rodata*)
  .rodata.str1.1
-                0x00800100        0x5 src/main.o
+                0x00800100        0xb src/main.o
  *(.gnu.linkonce.d*)
-                0x00800106                . = ALIGN (0x2)
- *fill*         0x00800105        0x1 
-                0x00800106                _edata = .
-                0x00800106                PROVIDE (__data_end, .)
+                0x0080010c                . = ALIGN (0x2)
+ *fill*         0x0080010b        0x1 
+                0x0080010c                _edata = .
+                0x0080010c                PROVIDE (__data_end, .)
 
-.bss            0x00800106        0x0
-                0x00800106                PROVIDE (__bss_start, .)
+.bss            0x0080010c        0x0
+                0x0080010c                PROVIDE (__bss_start, .)
  *(.bss)
  *(.bss*)
  *(COMMON)
-                0x00800106                PROVIDE (__bss_end, .)
-                0x000001fe                __data_load_start = LOADADDR (.data)
-                0x00000204                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x0080010c                PROVIDE (__bss_end, .)
+                0x0000020a                __data_load_start = LOADADDR (.data)
+                0x00000216                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x00800106        0x0
-                0x00800106                PROVIDE (__noinit_start, .)
+.noinit         0x0080010c        0x0
+                0x0080010c                PROVIDE (__noinit_start, .)
  *(.noinit*)
-                0x00800106                PROVIDE (__noinit_end, .)
-                0x00800106                _end = .
-                0x00800106                PROVIDE (__heap_start, .)
+                0x0080010c                PROVIDE (__noinit_end, .)
+                0x0080010c                _end = .
+                0x0080010c                PROVIDE (__heap_start, .)
 
 .eeprom         0x00810000        0x0
  *(.eeprom*)
@@ -536,20 +536,20 @@ END GROUP
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000      0x605
+.debug_info     0x00000000      0x621
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x00000000      0x4d6 src/HD44780.o
- .debug_info    0x000004d6      0x12f src/main.o
+ .debug_info    0x000004d6      0x14b src/main.o
 
 .debug_abbrev   0x00000000      0x242
  *(.debug_abbrev)
  .debug_abbrev  0x00000000      0x176 src/HD44780.o
  .debug_abbrev  0x00000176       0xcc src/main.o
 
-.debug_line     0x00000000      0x7a8
+.debug_line     0x00000000      0x79a
  *(.debug_line .debug_line.* .debug_line_end)
  .debug_line    0x00000000      0x4a7 src/HD44780.o
- .debug_line    0x000004a7      0x301 src/main.o
+ .debug_line    0x000004a7      0x2f3 src/main.o
 
 .debug_frame    0x00000000       0xe4
  *(.debug_frame)
