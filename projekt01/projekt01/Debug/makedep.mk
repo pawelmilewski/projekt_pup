@@ -4,5 +4,7 @@
 
 src\ASF\mega\boards\stk600\rcx_x\init.c
 
+src\HD44780.c
+
 src\main.c
 

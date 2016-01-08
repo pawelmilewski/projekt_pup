@@ -1,7 +1,7 @@
 #define F_CPU 8000000 //czestotliwosc taktowania uC
 #include <avr/io.h>	//wykorzystane biblioteki
 #include <util/delay.h>
-
+#include <HD44780.h>
 //PE0 & PE1 MOSI MISO
 #define  SK1_STEP_1 PORTE|=(1<<PE2);//zdefiniowane porty
 #define  SK1_STEP_0 PORTE&=~(1<<PE2);
@@ -42,7 +42,7 @@
 
 //#define  ON/OFF_ALL_1 PORTD|=(1<<PD0); //INT0
 //#define  ON/OFF_ALL_0 PORTE&=~(1<<PD0);
-//#define  O/O_A_1 PORTD|=(1<<PD1); //INT1
+//#define  O/O_vA_1 PORTD|=(1<<PD1); //INT1
 //#define  O/O_A_0 PORTD&=~(1<<PD1);
 
 //WYSWIETLLACZ DIS_D2=PD2; DIS_D3=PD3; DIS_D4=PD4; DIS_D5=PD5; DIS_D6=PD6; DIS_D7=PD7; DIS_RS=PA0; DIS_R/W=PA1; DIS_E=PA2; DIS_C1=PA3; DIS_C2=PA4; DIS_RST=PA5; DIS_D0=PA6; DIS_D1=PA7; DIS_ON/OFF=PC7
@@ -73,13 +73,19 @@ int main(void)
 	SK1_DIR_1;
 	SK2_EN_0;
 	SK2_DIR_1;
+
 	for(;;)
 	{
-		_delay_us(300);
+		/*_delay_us(300);
 		SK1_STEP_1;
 		SK2_STEP_1;
 		_delay_us(300);
 		SK1_STEP_0;
-		SK2_STEP_0;
+		SK2_STEP_0;*/
+				LCD_Clear();
+				LCD_Home();
+				LCD_Initalize();
+				LCD_WriteText("love");
+				LCD_GoTo(0,1);
 	}
 }
