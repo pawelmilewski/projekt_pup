@@ -2,6 +2,7 @@
 #include <avr/io.h>	//wykorzystane biblioteki
 #include <util/delay.h>
 #include <HD44780.h>
+#include <stdlib.h>
 //PE0 & PE1 MOSI MISO
 #define  SK1_STEP_1 PORTE|=(1<<PE2);//zdefiniowane porty
 #define  SK1_STEP_0 PORTE&=~(1<<PE2);
@@ -62,34 +63,66 @@
 #define  TR_SPRE_TUBA_0 PORTC&=~(1<<PC1);
 #define  TR_WENT_1 PORTC|=(1<<PC0);
 #define  TR_WENT_0 PORTC&=~(1<<PC0);
+
+int licz_ob;	//zdefiniowanie zmiennej - liczba biegow petli
+int pomiar_ADC0;//zdefiniowanie zmiennej - odczyt wartosci z przetwornika A/C - port ADC7
+
 int main(void)
 {//petla glowna
-	DDRE=0x3C; // port e jako wyjœcie 00111100
-	PORTE=0x3C;
-	DDRB=0xFD; 
-	PORTB=0xFD;
+		char bufor[4];
+		DDRE=0x3C; // port e jako wyjœcie 00111100
+		PORTE=0x3C;
+		DDRB=0xFD;
+		PORTB=0xFD;
 
-	SK1_EN_1;
-	SK1_DIR_1;
-	SK2_EN_1;
-	SK2_DIR_1;
-
-				LCD_Initalize();
-				LCD_Clear();
-				LCD_Home();
-				LCD_WriteText("love");
-				LCD_GoTo(0,1);
-				LCD_WriteText("love2");
-
+		DDRD=0xff;
+		PORTD=0xff;
+		DDRA=0xff;
+		PORTA=0xff;
+	
+		ADCSRA=(1<<ADEN)			//ustawienie bitu ADEN=1 - wlaczenie  przetwornika A/C
+		|(0<<ADPS0)	// ustawienie preskalera na 64 // ustawienie
+		|(1<<ADPS1)	// czestotliwosc taktowania przetwornika A/C, f=8Mhz/64
+		|(1<<ADPS2);
+		ADMUX=(0<<REFS1)|(1<<REFS0); 	// wybor zewnetrznego napiecia odniesienia
+	
+		SK1_EN_1; //poczatkowe wartosci
+		SK1_DIR_1;
+		SK2_EN_1;
+		SK2_DIR_1;
+			
+		
+			LCD_Initalize();
+			LCD_WriteText("Hello World");
+			LCD_GoTo(0,1);
+			LCD_WriteText("test");
 	for(;;)
 	{
-		/*_delay_us(300);
+
+		_delay_us(300);
 		SK1_STEP_1;
 		SK2_STEP_1;
 		_delay_us(300);
 		SK1_STEP_0;
-		SK2_STEP_0;*/
+		SK2_STEP_0;
+		
+		licz_ob++;			//zliczanie obiegow petli
+		if (licz_ob==4)
+		{
+			licz_ob=0;										//wyzerowanie licznika
+			ADCSRA |= (1<<ADSC);							//uruchomienie pojedynczej konwersji
+			while(ADCSRA & (1<<ADSC));						//czeka na zakoñczenie konwersji
+			ADMUX=(0<<MUX3)|(0<<MUX2)|(0<<MUX1)|(0<<MUX0);  // wybór kana³u ADC0
+			pomiar_ADC0 = ADC;								//wynik konwersji
+		}
+		itoa(pomiar_ADC0, bufor, 10);
+		LCD_GoTo(6,1);
+		LCD_WriteText("    ");
+		LCD_GoTo(6,1);
+		LCD_WriteText(bufor);
 
-
+		
+		
+	
 	}
 }
