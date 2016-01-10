@@ -3,33 +3,33 @@ projekt01.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         00000016  00800100  00000330  000003c4  2**0
+  0 .data         0000000a  00800100  000003a4  00000438  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         00000330  00000000  00000000  00000094  2**1
+  1 .text         000003a4  00000000  00000000  00000094  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .bss          00000004  00800116  00800116  000003da  2**0
+  2 .bss          0000000c  0080010a  0080010a  00000442  2**0
                   ALLOC
-  3 .comment      00000030  00000000  00000000  000003da  2**0
+  3 .comment      00000030  00000000  00000000  00000442  2**0
                   CONTENTS, READONLY
-  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  0000040c  2**2
+  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000474  2**2
                   CONTENTS, READONLY
-  5 .debug_aranges 000000a0  00000000  00000000  00000448  2**0
+  5 .debug_aranges 000000b0  00000000  00000000  000004b0  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   000008a5  00000000  00000000  000004e8  2**0
+  6 .debug_info   00000856  00000000  00000000  00000560  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 000003a3  00000000  00000000  00000d8d  2**0
+  7 .debug_abbrev 0000035e  00000000  00000000  00000db6  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   0000094d  00000000  00000000  00001130  2**0
+  8 .debug_line   00000a6e  00000000  00000000  00001114  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  00000140  00000000  00000000  00001a80  2**2
+  9 .debug_frame  00000184  00000000  00000000  00001b84  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    00007c2c  00000000  00000000  00001bc0  2**0
+ 10 .debug_str    0001127e  00000000  00000000  00001d08  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    00000275  00000000  00000000  000097ec  2**0
+ 11 .debug_loc    000002d9  00000000  00000000  00012f86  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00000080  00000000  00000000  00009a61  2**0
+ 12 .debug_ranges 00000090  00000000  00000000  0001325f  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_macro  0000068b  00000000  00000000  00009ae1  2**0
+ 13 .debug_macro  0000076f  00000000  00000000  000132ef  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -55,7 +55,7 @@ Disassembly of section .text:
   22:	00 00       	nop
   24:	50 c0       	rjmp	.+160    	; 0xc6 <__bad_interrupt>
   26:	00 00       	nop
-  28:	4e c0       	rjmp	.+156    	; 0xc6 <__bad_interrupt>
+  28:	73 c1       	rjmp	.+742    	; 0x310 <__vector_10>
   2a:	00 00       	nop
   2c:	4c c0       	rjmp	.+152    	; 0xc6 <__bad_interrupt>
   2e:	00 00       	nop
@@ -67,7 +67,7 @@ Disassembly of section .text:
   3a:	00 00       	nop
   3c:	44 c0       	rjmp	.+136    	; 0xc6 <__bad_interrupt>
   3e:	00 00       	nop
-  40:	42 c0       	rjmp	.+132    	; 0xc6 <__bad_interrupt>
+  40:	44 c1       	rjmp	.+648    	; 0x2ca <__vector_16>
   42:	00 00       	nop
   44:	40 c0       	rjmp	.+128    	; 0xc6 <__bad_interrupt>
   46:	00 00       	nop
@@ -118,20 +118,20 @@ Disassembly of section .text:
   98:	11 e0       	ldi	r17, 0x01	; 1
   9a:	a0 e0       	ldi	r26, 0x00	; 0
   9c:	b1 e0       	ldi	r27, 0x01	; 1
-  9e:	e0 e3       	ldi	r30, 0x30	; 48
+  9e:	e4 ea       	ldi	r30, 0xA4	; 164
   a0:	f3 e0       	ldi	r31, 0x03	; 3
   a2:	00 e0       	ldi	r16, 0x00	; 0
   a4:	0b bf       	out	0x3b, r16	; 59
   a6:	02 c0       	rjmp	.+4      	; 0xac <__do_copy_data+0x14>
   a8:	07 90       	elpm	r0, Z+
   aa:	0d 92       	st	X+, r0
-  ac:	a6 31       	cpi	r26, 0x16	; 22
+  ac:	aa 30       	cpi	r26, 0x0A	; 10
   ae:	b1 07       	cpc	r27, r17
   b0:	d9 f7       	brne	.-10     	; 0xa8 <__do_copy_data+0x10>
 
 000000b2 <__do_clear_bss>:
   b2:	21 e0       	ldi	r18, 0x01	; 1
-  b4:	a6 e1       	ldi	r26, 0x16	; 22
+  b4:	aa e0       	ldi	r26, 0x0A	; 10
   b6:	b1 e0       	ldi	r27, 0x01	; 1
   b8:	01 c0       	rjmp	.+2      	; 0xbc <.do_clear_bss_start>
 
@@ -139,11 +139,11 @@ Disassembly of section .text:
   ba:	1d 92       	st	X+, r1
 
 000000bc <.do_clear_bss_start>:
-  bc:	aa 31       	cpi	r26, 0x1A	; 26
+  bc:	a6 31       	cpi	r26, 0x16	; 22
   be:	b2 07       	cpc	r27, r18
   c0:	e1 f7       	brne	.-8      	; 0xba <.do_clear_bss_loop>
   c2:	9d d0       	rcall	.+314    	; 0x1fe <main>
-  c4:	33 c1       	rjmp	.+614    	; 0x32c <_exit>
+  c4:	6d c1       	rjmp	.+730    	; 0x3a0 <_exit>
 
 000000c6 <__bad_interrupt>:
   c6:	9c cf       	rjmp	.-200    	; 0x0 <__vectors>
@@ -375,239 +375,323 @@ void LCD_Initalize(void)
  1fc:	08 95       	ret
 
 000001fe <main>:
-
-int licz_ob;	//zdefiniowanie zmiennej - liczba biegow petli
-int pomiar_ADC0;//zdefiniowanie zmiennej - odczyt wartosci z przetwornika A/C - port ADC7
+volatile uint8_t licznik=0;
 
 int main(void)
 {//petla glowna
- 1fe:	cf 93       	push	r28
- 200:	df 93       	push	r29
- 202:	00 d0       	rcall	.+0      	; 0x204 <main+0x6>
- 204:	00 d0       	rcall	.+0      	; 0x206 <main+0x8>
- 206:	cd b7       	in	r28, 0x3d	; 61
- 208:	de b7       	in	r29, 0x3e	; 62
-		char bufor[4];
+		
 		DDRE=0x3C; // port e jako wyjœcie 00111100
- 20a:	8c e3       	ldi	r24, 0x3C	; 60
- 20c:	82 b9       	out	0x02, r24	; 2
+ 1fe:	8c e3       	ldi	r24, 0x3C	; 60
+ 200:	82 b9       	out	0x02, r24	; 2
 		PORTE=0x3C;
- 20e:	83 b9       	out	0x03, r24	; 3
+ 202:	83 b9       	out	0x03, r24	; 3
 		DDRB=0xFD;
- 210:	8d ef       	ldi	r24, 0xFD	; 253
- 212:	87 bb       	out	0x17, r24	; 23
+ 204:	8d ef       	ldi	r24, 0xFD	; 253
+ 206:	87 bb       	out	0x17, r24	; 23
 		PORTB=0xFD;
- 214:	88 bb       	out	0x18, r24	; 24
-
-		DDRD=0xff;
- 216:	8f ef       	ldi	r24, 0xFF	; 255
- 218:	81 bb       	out	0x11, r24	; 17
-		PORTD=0xff;
- 21a:	82 bb       	out	0x12, r24	; 18
-		DDRA=0xff;
- 21c:	8a bb       	out	0x1a, r24	; 26
-		PORTA=0xff;
- 21e:	8b bb       	out	0x1b, r24	; 27
+ 208:	88 bb       	out	0x18, r24	; 24
+		DDRG=0x02;
+ 20a:	82 e0       	ldi	r24, 0x02	; 2
+ 20c:	80 93 64 00 	sts	0x0064, r24
+		PORTG=0x02;
+ 210:	80 93 65 00 	sts	0x0065, r24
+		DDRC=0x03;
+ 214:	83 e0       	ldi	r24, 0x03	; 3
+ 216:	84 bb       	out	0x14, r24	; 20
+		PORTC=0x03;
+ 218:	85 bb       	out	0x15, r24	; 21
 	
 		ADCSRA=(1<<ADEN)			//ustawienie bitu ADEN=1 - wlaczenie  przetwornika A/C
- 220:	86 e8       	ldi	r24, 0x86	; 134
- 222:	86 b9       	out	0x06, r24	; 6
+ 21a:	86 e8       	ldi	r24, 0x86	; 134
+ 21c:	86 b9       	out	0x06, r24	; 6
 		|(0<<ADPS0)	// ustawienie preskalera na 64 // ustawienie
 		|(1<<ADPS1)	// czestotliwosc taktowania przetwornika A/C, f=8Mhz/64
 		|(1<<ADPS2);
 		ADMUX=(0<<REFS1)|(1<<REFS0); 	// wybor zewnetrznego napiecia odniesienia
- 224:	80 e4       	ldi	r24, 0x40	; 64
- 226:	87 b9       	out	0x07, r24	; 7
+ 21e:	80 e4       	ldi	r24, 0x40	; 64
+ 220:	87 b9       	out	0x07, r24	; 7
+		
+		//######## konfiguracja timera0 ##############
+		TIMSK |= (1<<TOIE2)|(1<<TOIE0);          //Przerwanie overflow (przepe³nienie timera)
+ 222:	87 b7       	in	r24, 0x37	; 55
+ 224:	81 64       	ori	r24, 0x41	; 65
+ 226:	87 bf       	out	0x37, r24	; 55
+		TCCR0 |= (1<<CS02) | (1<<CS01) | (0<<CS00); // Ÿród³em CLK, preskaler 1024
+ 228:	83 b7       	in	r24, 0x33	; 51
+ 22a:	86 60       	ori	r24, 0x06	; 6
+ 22c:	83 bf       	out	0x33, r24	; 51
+		TCNT0 = timer1;//          //Pocz¹tkowa wartoœæ licznika
+ 22e:	80 91 13 01 	lds	r24, 0x0113
+ 232:	82 bf       	out	0x32, r24	; 50
+		//###########################################
+		//######## konfiguracja timera2 ##############
+		TCCR2 |= (0<<CS22) | (1<<CS21) | (1<<CS20); // Ÿród³em CLK, preskaler 1024
+ 234:	85 b5       	in	r24, 0x25	; 37
+ 236:	83 60       	ori	r24, 0x03	; 3
+ 238:	85 bd       	out	0x25, r24	; 37
+		TCNT2 = timer2;//          //Pocz¹tkowa wartoœæ licznika
+ 23a:	80 91 0e 01 	lds	r24, 0x010E
+ 23e:	84 bd       	out	0x24, r24	; 36
+		//###########################################		
+
+		sei();//Globalne uruchomienie przerwañ
+ 240:	78 94       	sei
 	
-		SK1_EN_1; //poczatkowe wartosci
- 228:	c3 9a       	sbi	0x18, 3	; 24
+		SK1_EN_0; //poczatkowe wartosci
+ 242:	c3 98       	cbi	0x18, 3	; 24
 		SK1_DIR_1;
- 22a:	c2 9a       	sbi	0x18, 2	; 24
-		SK2_EN_1;
- 22c:	1b 9a       	sbi	0x03, 3	; 3
+ 244:	c2 9a       	sbi	0x18, 2	; 24
+		SK2_EN_0;
+ 246:	1b 98       	cbi	0x03, 3	; 3
 		SK2_DIR_1;
- 22e:	1c 9a       	sbi	0x03, 4	; 3
-			
+ 248:	1c 9a       	sbi	0x03, 4	; 3
+		TR_SPRE_1;
+ 24a:	a9 9a       	sbi	0x15, 1	; 21
+		TR_WENT_1;	
+ 24c:	a8 9a       	sbi	0x15, 0	; 21
 		
 			LCD_Initalize();
- 230:	b2 df       	rcall	.-156    	; 0x196 <LCD_Initalize>
-			LCD_WriteText("Hello World");
- 232:	80 e0       	ldi	r24, 0x00	; 0
- 234:	91 e0       	ldi	r25, 0x01	; 1
- 236:	9a df       	rcall	.-204    	; 0x16c <LCD_WriteText>
+ 24e:	a3 df       	rcall	.-186    	; 0x196 <LCD_Initalize>
 			LCD_GoTo(0,1);
- 238:	61 e0       	ldi	r22, 0x01	; 1
- 23a:	80 e0       	ldi	r24, 0x00	; 0
- 23c:	a5 df       	rcall	.-182    	; 0x188 <LCD_GoTo>
-			LCD_WriteText("test");
- 23e:	8c e0       	ldi	r24, 0x0C	; 12
- 240:	91 e0       	ldi	r25, 0x01	; 1
- 242:	94 df       	rcall	.-216    	; 0x16c <LCD_WriteText>
-	#else
-		//round up by default
-		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
-	#endif
-
-	__builtin_avr_delay_cycles(__ticks_dc);
- 244:	87 e5       	ldi	r24, 0x57	; 87
- 246:	92 e0       	ldi	r25, 0x02	; 2
- 248:	01 97       	sbiw	r24, 0x01	; 1
- 24a:	f1 f7       	brne	.-4      	; 0x248 <main+0x4a>
- 24c:	00 c0       	rjmp	.+0      	; 0x24e <main+0x50>
- 24e:	00 00       	nop
+ 250:	61 e0       	ldi	r22, 0x01	; 1
+ 252:	80 e0       	ldi	r24, 0x00	; 0
+ 254:	99 df       	rcall	.-206    	; 0x188 <LCD_GoTo>
+			LCD_WriteText("ADC");
+ 256:	80 e0       	ldi	r24, 0x00	; 0
+ 258:	91 e0       	ldi	r25, 0x01	; 1
+ 25a:	88 df       	rcall	.-240    	; 0x16c <LCD_WriteText>
+		itoa(pomiar_ADC0, bufor, 10);
+		LCD_GoTo(6,1);
+		LCD_WriteText("    ");
+		LCD_GoTo(6,1);
+		LCD_WriteText(bufor);
+		timer2=100;
+ 25c:	d4 e6       	ldi	r29, 0x64	; 100
+		timer1=5;
+ 25e:	c5 e0       	ldi	r28, 0x05	; 5
+			LCD_Initalize();
+			LCD_GoTo(0,1);
+			LCD_WriteText("ADC");
 	for(;;)
 	{
-
-		_delay_us(300);
-		SK1_STEP_1;
- 250:	1a 9a       	sbi	0x03, 2	; 3
-		SK2_STEP_1;
- 252:	1d 9a       	sbi	0x03, 5	; 3
- 254:	87 e5       	ldi	r24, 0x57	; 87
- 256:	92 e0       	ldi	r25, 0x02	; 2
- 258:	01 97       	sbiw	r24, 0x01	; 1
- 25a:	f1 f7       	brne	.-4      	; 0x258 <main+0x5a>
- 25c:	00 c0       	rjmp	.+0      	; 0x25e <main+0x60>
- 25e:	00 00       	nop
-		_delay_us(300);
-		SK1_STEP_0;
- 260:	1a 98       	cbi	0x03, 2	; 3
-		SK2_STEP_0;
- 262:	1d 98       	cbi	0x03, 5	; 3
-		
 		licz_ob++;			//zliczanie obiegow petli
- 264:	80 91 18 01 	lds	r24, 0x0118
- 268:	90 91 19 01 	lds	r25, 0x0119
- 26c:	01 96       	adiw	r24, 0x01	; 1
-		if (licz_ob==4)
- 26e:	84 30       	cpi	r24, 0x04	; 4
- 270:	91 05       	cpc	r25, r1
- 272:	29 f0       	breq	.+10     	; 0x27e <main+0x80>
-		SK2_STEP_1;
-		_delay_us(300);
-		SK1_STEP_0;
-		SK2_STEP_0;
-		
+ 260:	80 91 14 01 	lds	r24, 0x0114
+ 264:	90 91 15 01 	lds	r25, 0x0115
+ 268:	01 96       	adiw	r24, 0x01	; 1
+		if (licz_ob==1000)
+ 26a:	88 3e       	cpi	r24, 0xE8	; 232
+ 26c:	23 e0       	ldi	r18, 0x03	; 3
+ 26e:	92 07       	cpc	r25, r18
+ 270:	29 f0       	breq	.+10     	; 0x27c <main+0x7e>
+			LCD_Initalize();
+			LCD_GoTo(0,1);
+			LCD_WriteText("ADC");
+	for(;;)
+	{
 		licz_ob++;			//zliczanie obiegow petli
- 274:	90 93 19 01 	sts	0x0119, r25
- 278:	80 93 18 01 	sts	0x0118, r24
- 27c:	0e c0       	rjmp	.+28     	; 0x29a <main+0x9c>
-		if (licz_ob==4)
+ 272:	90 93 15 01 	sts	0x0115, r25
+ 276:	80 93 14 01 	sts	0x0114, r24
+ 27a:	0e c0       	rjmp	.+28     	; 0x298 <main+0x9a>
+		if (licz_ob==1000)
 		{
 			licz_ob=0;										//wyzerowanie licznika
- 27e:	10 92 19 01 	sts	0x0119, r1
- 282:	10 92 18 01 	sts	0x0118, r1
+ 27c:	10 92 15 01 	sts	0x0115, r1
+ 280:	10 92 14 01 	sts	0x0114, r1
 			ADCSRA |= (1<<ADSC);							//uruchomienie pojedynczej konwersji
- 286:	36 9a       	sbi	0x06, 6	; 6
+ 284:	36 9a       	sbi	0x06, 6	; 6
 			while(ADCSRA & (1<<ADSC));						//czeka na zakoñczenie konwersji
- 288:	36 99       	sbic	0x06, 6	; 6
- 28a:	fe cf       	rjmp	.-4      	; 0x288 <main+0x8a>
+ 286:	36 99       	sbic	0x06, 6	; 6
+ 288:	fe cf       	rjmp	.-4      	; 0x286 <main+0x88>
 			ADMUX=(0<<MUX3)|(0<<MUX2)|(0<<MUX1)|(0<<MUX0);  // wybór kana³u ADC0
- 28c:	17 b8       	out	0x07, r1	; 7
+ 28a:	17 b8       	out	0x07, r1	; 7
 			pomiar_ADC0 = ADC;								//wynik konwersji
- 28e:	84 b1       	in	r24, 0x04	; 4
- 290:	95 b1       	in	r25, 0x05	; 5
- 292:	90 93 17 01 	sts	0x0117, r25
- 296:	80 93 16 01 	sts	0x0116, r24
+ 28c:	84 b1       	in	r24, 0x04	; 4
+ 28e:	95 b1       	in	r25, 0x05	; 5
+ 290:	90 93 0b 01 	sts	0x010B, r25
+ 294:	80 93 0a 01 	sts	0x010A, r24
     } else if (__radix < 2 || __radix > 36) {
 	*__s = 0;
 	return __s;
     } else {
 	extern char *__itoa_ncheck (int, char *, unsigned char);
 	return __itoa_ncheck (__val, __s, __radix);
- 29a:	4a e0       	ldi	r20, 0x0A	; 10
- 29c:	be 01       	movw	r22, r28
- 29e:	6f 5f       	subi	r22, 0xFF	; 255
- 2a0:	7f 4f       	sbci	r23, 0xFF	; 255
- 2a2:	80 91 16 01 	lds	r24, 0x0116
- 2a6:	90 91 17 01 	lds	r25, 0x0117
- 2aa:	0d d0       	rcall	.+26     	; 0x2c6 <__itoa_ncheck>
+ 298:	4a e0       	ldi	r20, 0x0A	; 10
+ 29a:	6f e0       	ldi	r22, 0x0F	; 15
+ 29c:	71 e0       	ldi	r23, 0x01	; 1
+ 29e:	80 91 0a 01 	lds	r24, 0x010A
+ 2a2:	90 91 0b 01 	lds	r25, 0x010B
+ 2a6:	49 d0       	rcall	.+146    	; 0x33a <__itoa_ncheck>
+		
 		}
+
+
 		itoa(pomiar_ADC0, bufor, 10);
 		LCD_GoTo(6,1);
- 2ac:	61 e0       	ldi	r22, 0x01	; 1
- 2ae:	86 e0       	ldi	r24, 0x06	; 6
- 2b0:	6b df       	rcall	.-298    	; 0x188 <LCD_GoTo>
+ 2a8:	61 e0       	ldi	r22, 0x01	; 1
+ 2aa:	86 e0       	ldi	r24, 0x06	; 6
+ 2ac:	6d df       	rcall	.-294    	; 0x188 <LCD_GoTo>
 		LCD_WriteText("    ");
- 2b2:	81 e1       	ldi	r24, 0x11	; 17
- 2b4:	91 e0       	ldi	r25, 0x01	; 1
- 2b6:	5a df       	rcall	.-332    	; 0x16c <LCD_WriteText>
+ 2ae:	84 e0       	ldi	r24, 0x04	; 4
+ 2b0:	91 e0       	ldi	r25, 0x01	; 1
+ 2b2:	5c df       	rcall	.-328    	; 0x16c <LCD_WriteText>
 		LCD_GoTo(6,1);
- 2b8:	61 e0       	ldi	r22, 0x01	; 1
- 2ba:	86 e0       	ldi	r24, 0x06	; 6
- 2bc:	65 df       	rcall	.-310    	; 0x188 <LCD_GoTo>
+ 2b4:	61 e0       	ldi	r22, 0x01	; 1
+ 2b6:	86 e0       	ldi	r24, 0x06	; 6
+ 2b8:	67 df       	rcall	.-306    	; 0x188 <LCD_GoTo>
 		LCD_WriteText(bufor);
- 2be:	ce 01       	movw	r24, r28
- 2c0:	01 96       	adiw	r24, 0x01	; 1
- 2c2:	54 df       	rcall	.-344    	; 0x16c <LCD_WriteText>
+ 2ba:	8f e0       	ldi	r24, 0x0F	; 15
+ 2bc:	91 e0       	ldi	r25, 0x01	; 1
+ 2be:	56 df       	rcall	.-340    	; 0x16c <LCD_WriteText>
+		timer2=100;
+ 2c0:	d0 93 0e 01 	sts	0x010E, r29
+		timer1=5;
+ 2c4:	c0 93 13 01 	sts	0x0113, r28
+		
+	}	
+ 2c8:	cb cf       	rjmp	.-106    	; 0x260 <main+0x62>
 
-		
-		
+000002ca <__vector_16>:
+}	
+
+
+//############ Procedura obs³ugi przerwania od przepe³nienia timera0 ############
+ISR(TIMER0_OVF_vect)
+{
+ 2ca:	1f 92       	push	r1
+ 2cc:	0f 92       	push	r0
+ 2ce:	0f b6       	in	r0, 0x3f	; 63
+ 2d0:	0f 92       	push	r0
+ 2d2:	11 24       	eor	r1, r1
+ 2d4:	0b b6       	in	r0, 0x3b	; 59
+ 2d6:	0f 92       	push	r0
+ 2d8:	8f 93       	push	r24
+ 2da:	9f 93       	push	r25
+ 2dc:	ef 93       	push	r30
+ 2de:	ff 93       	push	r31
+	TCNT0 = timer1;			//Pocz¹tkowa wartoœæ licznika
+ 2e0:	80 91 13 01 	lds	r24, 0x0113
+ 2e4:	82 bf       	out	0x32, r24	; 50
+
+		PORTG ^=(1<<PG1);			//suma modulo 2 (XOR) stanu poprzedniego
+ 2e6:	e5 e6       	ldi	r30, 0x65	; 101
+ 2e8:	f0 e0       	ldi	r31, 0x00	; 0
+ 2ea:	90 81       	ld	r25, Z
+ 2ec:	82 e0       	ldi	r24, 0x02	; 2
+ 2ee:	89 27       	eor	r24, r25
+ 2f0:	80 83       	st	Z, r24
+		PORTE ^=(1<<PE2);			//na porcie i pinu(zmiana stanu na przeciwny)				
+ 2f2:	93 b1       	in	r25, 0x03	; 3
+ 2f4:	84 e0       	ldi	r24, 0x04	; 4
+ 2f6:	89 27       	eor	r24, r25
+ 2f8:	83 b9       	out	0x03, r24	; 3
+								
+									
+}
+ 2fa:	ff 91       	pop	r31
+ 2fc:	ef 91       	pop	r30
+ 2fe:	9f 91       	pop	r25
+ 300:	8f 91       	pop	r24
+ 302:	0f 90       	pop	r0
+ 304:	0b be       	out	0x3b, r0	; 59
+ 306:	0f 90       	pop	r0
+ 308:	0f be       	out	0x3f, r0	; 63
+ 30a:	0f 90       	pop	r0
+ 30c:	1f 90       	pop	r1
+ 30e:	18 95       	reti
+
+00000310 <__vector_10>:
+//##############################################################################
+//############ Procedura obs³ugi przerwania od przepe³nienia timera2 ############
+ISR(TIMER2_OVF_vect)
+{
+ 310:	1f 92       	push	r1
+ 312:	0f 92       	push	r0
+ 314:	0f b6       	in	r0, 0x3f	; 63
+ 316:	0f 92       	push	r0
+ 318:	11 24       	eor	r1, r1
+ 31a:	8f 93       	push	r24
+ 31c:	9f 93       	push	r25
+	TCNT2 = timer2;			//Pocz¹tkowa wartoœæ licznika
+ 31e:	80 91 0e 01 	lds	r24, 0x010E
+ 322:	84 bd       	out	0x24, r24	; 36
+
+								//suma modulo 2 (XOR) stanu poprzedniego
+	PORTE ^=(1<<PE5);			//na porcie i pinu(zmiana stanu na przeciwny)
+ 324:	93 b1       	in	r25, 0x03	; 3
+ 326:	80 e2       	ldi	r24, 0x20	; 32
+ 328:	89 27       	eor	r24, r25
+ 32a:	83 b9       	out	0x03, r24	; 3
 	
-	}
- 2c4:	bf cf       	rjmp	.-130    	; 0x244 <main+0x46>
+}
+ 32c:	9f 91       	pop	r25
+ 32e:	8f 91       	pop	r24
+ 330:	0f 90       	pop	r0
+ 332:	0f be       	out	0x3f, r0	; 63
+ 334:	0f 90       	pop	r0
+ 336:	1f 90       	pop	r1
+ 338:	18 95       	reti
 
-000002c6 <__itoa_ncheck>:
- 2c6:	bb 27       	eor	r27, r27
- 2c8:	4a 30       	cpi	r20, 0x0A	; 10
- 2ca:	31 f4       	brne	.+12     	; 0x2d8 <__itoa_ncheck+0x12>
- 2cc:	99 23       	and	r25, r25
- 2ce:	22 f4       	brpl	.+8      	; 0x2d8 <__itoa_ncheck+0x12>
- 2d0:	bd e2       	ldi	r27, 0x2D	; 45
- 2d2:	90 95       	com	r25
- 2d4:	81 95       	neg	r24
- 2d6:	9f 4f       	sbci	r25, 0xFF	; 255
- 2d8:	01 c0       	rjmp	.+2      	; 0x2dc <__utoa_common>
+0000033a <__itoa_ncheck>:
+ 33a:	bb 27       	eor	r27, r27
+ 33c:	4a 30       	cpi	r20, 0x0A	; 10
+ 33e:	31 f4       	brne	.+12     	; 0x34c <__itoa_ncheck+0x12>
+ 340:	99 23       	and	r25, r25
+ 342:	22 f4       	brpl	.+8      	; 0x34c <__itoa_ncheck+0x12>
+ 344:	bd e2       	ldi	r27, 0x2D	; 45
+ 346:	90 95       	com	r25
+ 348:	81 95       	neg	r24
+ 34a:	9f 4f       	sbci	r25, 0xFF	; 255
+ 34c:	01 c0       	rjmp	.+2      	; 0x350 <__utoa_common>
 
-000002da <__utoa_ncheck>:
- 2da:	bb 27       	eor	r27, r27
+0000034e <__utoa_ncheck>:
+ 34e:	bb 27       	eor	r27, r27
 
-000002dc <__utoa_common>:
- 2dc:	fb 01       	movw	r30, r22
- 2de:	55 27       	eor	r21, r21
- 2e0:	aa 27       	eor	r26, r26
- 2e2:	88 0f       	add	r24, r24
- 2e4:	99 1f       	adc	r25, r25
- 2e6:	aa 1f       	adc	r26, r26
- 2e8:	a4 17       	cp	r26, r20
- 2ea:	10 f0       	brcs	.+4      	; 0x2f0 <__utoa_common+0x14>
- 2ec:	a4 1b       	sub	r26, r20
- 2ee:	83 95       	inc	r24
- 2f0:	50 51       	subi	r21, 0x10	; 16
- 2f2:	b9 f7       	brne	.-18     	; 0x2e2 <__utoa_common+0x6>
- 2f4:	a0 5d       	subi	r26, 0xD0	; 208
- 2f6:	aa 33       	cpi	r26, 0x3A	; 58
- 2f8:	08 f0       	brcs	.+2      	; 0x2fc <__utoa_common+0x20>
- 2fa:	a9 5d       	subi	r26, 0xD9	; 217
- 2fc:	a1 93       	st	Z+, r26
- 2fe:	00 97       	sbiw	r24, 0x00	; 0
- 300:	79 f7       	brne	.-34     	; 0x2e0 <__utoa_common+0x4>
- 302:	b1 11       	cpse	r27, r1
- 304:	b1 93       	st	Z+, r27
- 306:	11 92       	st	Z+, r1
- 308:	cb 01       	movw	r24, r22
- 30a:	00 c0       	rjmp	.+0      	; 0x30c <strrev>
+00000350 <__utoa_common>:
+ 350:	fb 01       	movw	r30, r22
+ 352:	55 27       	eor	r21, r21
+ 354:	aa 27       	eor	r26, r26
+ 356:	88 0f       	add	r24, r24
+ 358:	99 1f       	adc	r25, r25
+ 35a:	aa 1f       	adc	r26, r26
+ 35c:	a4 17       	cp	r26, r20
+ 35e:	10 f0       	brcs	.+4      	; 0x364 <__utoa_common+0x14>
+ 360:	a4 1b       	sub	r26, r20
+ 362:	83 95       	inc	r24
+ 364:	50 51       	subi	r21, 0x10	; 16
+ 366:	b9 f7       	brne	.-18     	; 0x356 <__utoa_common+0x6>
+ 368:	a0 5d       	subi	r26, 0xD0	; 208
+ 36a:	aa 33       	cpi	r26, 0x3A	; 58
+ 36c:	08 f0       	brcs	.+2      	; 0x370 <__utoa_common+0x20>
+ 36e:	a9 5d       	subi	r26, 0xD9	; 217
+ 370:	a1 93       	st	Z+, r26
+ 372:	00 97       	sbiw	r24, 0x00	; 0
+ 374:	79 f7       	brne	.-34     	; 0x354 <__utoa_common+0x4>
+ 376:	b1 11       	cpse	r27, r1
+ 378:	b1 93       	st	Z+, r27
+ 37a:	11 92       	st	Z+, r1
+ 37c:	cb 01       	movw	r24, r22
+ 37e:	00 c0       	rjmp	.+0      	; 0x380 <strrev>
 
-0000030c <strrev>:
- 30c:	dc 01       	movw	r26, r24
- 30e:	fc 01       	movw	r30, r24
- 310:	67 2f       	mov	r22, r23
- 312:	71 91       	ld	r23, Z+
- 314:	77 23       	and	r23, r23
- 316:	e1 f7       	brne	.-8      	; 0x310 <strrev+0x4>
- 318:	32 97       	sbiw	r30, 0x02	; 2
- 31a:	04 c0       	rjmp	.+8      	; 0x324 <strrev+0x18>
- 31c:	7c 91       	ld	r23, X
- 31e:	6d 93       	st	X+, r22
- 320:	70 83       	st	Z, r23
- 322:	62 91       	ld	r22, -Z
- 324:	ae 17       	cp	r26, r30
- 326:	bf 07       	cpc	r27, r31
- 328:	c8 f3       	brcs	.-14     	; 0x31c <strrev+0x10>
- 32a:	08 95       	ret
+00000380 <strrev>:
+ 380:	dc 01       	movw	r26, r24
+ 382:	fc 01       	movw	r30, r24
+ 384:	67 2f       	mov	r22, r23
+ 386:	71 91       	ld	r23, Z+
+ 388:	77 23       	and	r23, r23
+ 38a:	e1 f7       	brne	.-8      	; 0x384 <strrev+0x4>
+ 38c:	32 97       	sbiw	r30, 0x02	; 2
+ 38e:	04 c0       	rjmp	.+8      	; 0x398 <strrev+0x18>
+ 390:	7c 91       	ld	r23, X
+ 392:	6d 93       	st	X+, r22
+ 394:	70 83       	st	Z, r23
+ 396:	62 91       	ld	r22, -Z
+ 398:	ae 17       	cp	r26, r30
+ 39a:	bf 07       	cpc	r27, r31
+ 39c:	c8 f3       	brcs	.-14     	; 0x390 <strrev+0x10>
+ 39e:	08 95       	ret
 
-0000032c <_exit>:
- 32c:	f8 94       	cli
+000003a0 <_exit>:
+ 3a0:	f8 94       	cli
 
-0000032e <__stop_program>:
- 32e:	ff cf       	rjmp	.-2      	; 0x32e <__stop_program>
+000003a2 <__stop_program>:
+ 3a2:	ff cf       	rjmp	.-2      	; 0x3a2 <__stop_program>
