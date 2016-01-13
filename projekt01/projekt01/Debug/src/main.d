@@ -13,7 +13,7 @@ src/main.d src/main.o: ../src/main.c \
  d:\zainstalowane\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\delay.h \
  d:\zainstalowane\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\delay_basic.h \
  d:\zainstalowane\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\math.h \
- ../src/HD44780.h \
+ ../src/HD44780.h ../src/piny_bit.h \
  d:\zainstalowane\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\stdlib.h \
  d:\zainstalowane\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\4.9.2\include\stddef.h \
  ../src/ASF/common/utils/interrupt/interrupt_avr8.h \
@@ -23,7 +23,9 @@ src/main.d src/main.o: ../src/main.c \
  ../src/ASF/common/utils/interrupt/interrupt_avr8.h \
  ../src/ASF/mega/utils/progmem.h \
  d:\zainstalowane\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\pgmspace.h \
- d:\zainstalowane\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\interrupt.h
+ d:\zainstalowane\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\interrupt.h \
+ d:\zainstalowane\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\string.h \
+ d:\zainstalowane\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\signal.h
 
 d:\zainstalowane\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\io.h:
 
@@ -55,6 +57,8 @@ d:\zainstalowane\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\
 
 ../src/HD44780.h:
 
+../src/piny_bit.h:
+
 d:\zainstalowane\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\stdlib.h:
 
 d:\zainstalowane\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\4.9.2\include\stddef.h:
@@ -76,3 +80,7 @@ d:\zainstalowane\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\
 d:\zainstalowane\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\pgmspace.h:
 
 d:\zainstalowane\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\interrupt.h:
+
+d:\zainstalowane\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\string.h:
+
+d:\zainstalowane\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\signal.h:
