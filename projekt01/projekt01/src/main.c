@@ -55,8 +55,6 @@ int main(void)
 		DDRC=0x7F;
 		PORTC=0x7F;
 		//ADC
-		DDRF &=~(1<<wADC0);
-		DDRF &=~(1<<wADC2);
 		//DDRF=0b00000000;
 		PORTF=0b11111010;
 		//
@@ -83,7 +81,6 @@ int main(void)
 		OCR1A = 3053-1; //dla 8Mhz ////// 0,5 s
 		//###########################################	
 		
-	
 		SK1_EN_0; //poczatkowe wartosci
 		SK1_DIR_1;
 		SK2_EN_0;
@@ -97,7 +94,7 @@ int main(void)
 		
 		LCD_Initalize();
 		LCD_GoTo(0,0);
-		LCD_WriteText("Ps.00rpm|Ak00.0V");
+		LCD_WriteText("Ps000rpm|Ak00.0V");
 		LCD_GoTo(8,1);
 		LCD_WriteText(time);
 	sei();//Globalne uruchomienie przerwañ	
@@ -163,17 +160,28 @@ int main(void)
 		if(timeChanged05)
 		{		
 			LCD_GoTo(0,0);
-			LCD_WriteText("Ps.00rpm|Ak00.0V");
+			LCD_WriteText("Ps00_rpm|Ak00.0V");
 			itoa(obroty2, bufor, 10);
-			LCD_GoTo(3,0);
+			LCD_GoTo(2,0);
 			LCD_WriteText(bufor);
 			dtostrf(wolt, 3, 1, bufor2);
 			LCD_GoTo(11,0);
 			LCD_WriteText(bufor2);
 			timeChanged05 = false;
 		}
+		
 		if(timeChanged)
-		{
+		{	
+			if (obroty2<38)
+			{
+				SK2_EN_1;
+				LCD_GoTo(2,0);
+				LCD_WriteText("000");
+			}
+			else
+			{
+				SK2_EN_0;
+			}			
 			LCD_update_time();
 			timeChanged = false;
 		}
