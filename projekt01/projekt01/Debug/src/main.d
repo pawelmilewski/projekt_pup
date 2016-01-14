@@ -24,8 +24,7 @@ src/main.d src/main.o: ../src/main.c \
  ../src/ASF/mega/utils/progmem.h \
  d:\zainstalowane\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\pgmspace.h \
  d:\zainstalowane\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\interrupt.h \
- d:\zainstalowane\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\string.h \
- d:\zainstalowane\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\signal.h
+ d:\zainstalowane\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\string.h
 
 d:\zainstalowane\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\io.h:
 
@@ -82,5 +81,3 @@ d:\zainstalowane\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\
 d:\zainstalowane\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\interrupt.h:
 
 d:\zainstalowane\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\string.h:
-
-d:\zainstalowane\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\signal.h:

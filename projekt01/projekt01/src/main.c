@@ -7,8 +7,7 @@
 #include "interrupt/interrupt_avr8.h"
 #include "string.h"  
 #include "avr/interrupt.h"
-#include "avr/signal.h"
-#include "avr/iom128.h"
+
 //zmienne
 unsigned long licz_ob;	//liczba biegow petli
 int licz_ob1;	//liczba biegow petli1
@@ -23,6 +22,8 @@ char bufor2[8];
 unsigned char hours = 0;
 unsigned char minutes = 0;
 unsigned char seconds = 0;
+bool timeChanged = true;
+bool timeChanged05 = true;
 char time[] = "00:00:00";
 #define SET_HOUR		3
 #define SET_MINUTE		4
@@ -32,10 +33,12 @@ unsigned char i;
 #define ON_OFF_ALL PD0
 int obroty2;
 float wolt;
+int tablicarpm[5];
+
+void LCD_update_time();
 
 int main(void)
 {//petla glowna
-		
 		DDRE=0x3C; // port e jako wyjœcie 00111100
 		PORTE=0x3C;
 		DDRB=0xFD;
@@ -63,7 +66,7 @@ int main(void)
 		//###########################################		
 		//######## konfiguracja timera1 ##############
 		TCCR1B = (1<<CS12|1<<WGM12);
-		OCR1A = 31250-1; //dla 8Mhz
+		OCR1A = 15265-1; //dla 8Mhz ////// 0,5 s
 		//###########################################	
 		sei();//Globalne uruchomienie przerwañ
 	
@@ -84,7 +87,6 @@ int main(void)
 		LCD_GoTo(8,1);
 		LCD_WriteText(time);
 		
-
 	for(;;)
 	{
 		if(bit_is_clear(PINE, SPR_PRES))
@@ -95,8 +97,7 @@ int main(void)
 		{
 			PG1_0;		
 		}
-		
-		
+
 		//----ZEGAR
 		if(!(PING & (1<<SET_HOUR)))
 		{
@@ -111,21 +112,24 @@ int main(void)
 			minutes = 0;
 		}
 		//----
+		//##############USREDNIANIE
 
-			licz_ob++;
-			if (licz_ob==100000)
-			{
-				licz_ob=0;
-				//ADCSRA |= (1<<ADSC);							//uruchomienie pojedynczej konwersji
-				//while(ADCSRA & (1<<ADSC));						//czeka na zakoñczenie konwersji
-				ADMUX=(0<<MUX3)|(0<<MUX2)|(0<<MUX1)|(0<<MUX0);			// wybór kana³u ADC0
-				pomiar_ADC0=ADC;
-				ADMUX=(0<<MUX3)|(0<<MUX2)|(1<<MUX1)|(0<<MUX0);
-				//ADCSRA |= (1<<ADSC);
-				//while(ADCSRA & (1<<ADSC));
-				//			// wybór kana³u ADC2
+			ADCSRA |= (1<<ADSC);							//uruchomienie pojedynczej konwersji
+			while(ADCSRA & (1<<ADSC));						//czeka na zakoñczenie konwersji
+			ADMUX=(0<<MUX3)|(0<<MUX2)|(0<<MUX1)|(0<<MUX0);			// wybór kana³u ADC0
+			//pomiar_ADC0=ADC;
+			pomiar_ADC0=1000;
+			ADMUX=(0<<MUX3)|(0<<MUX2)|(1<<MUX1)|(0<<MUX0); // wybór kana³u ADC2
+			ADCSRA |= (1<<ADSC);
+			while(ADCSRA & (1<<ADSC));
+		//for(int a, a++, a==5)
+		//{
+		//	tablicarpm[a]=pomiar_ADC0;
+		//}
+			if(timeChanged05)
+			{		
 				pomiar_ADC2=ADC;
-				
+				//pomiar_ADC2=500;
 				timer2=pomiar_ADC0/5;
 				obroty2=9375/(2*(255-timer2));
 				wolt=0.0138*pomiar_ADC2-0.0332;
@@ -137,7 +141,13 @@ int main(void)
 				dtostrf(wolt, 3, 1, bufor2);
 				LCD_GoTo(11,0);
 				LCD_WriteText(bufor2);
+				timeChanged05 = false;
 			}
+			if(timeChanged)
+			{
+				LCD_update_time();
+				timeChanged = false;
+			}	
 	}	
 }
 //-----funcja LCD_update_time	
@@ -170,8 +180,7 @@ ISR(TIMER0_OVF_vect) //SILNIK 1 %%%% POMPA
 
 									//suma modulo 2 (XOR) stanu poprzedniego
 		PORTE ^=(1<<PE2);			//na porcie i pinu(zmiana stanu na przeciwny)				
-								
-								
+							
 }
 //##############################################################################
 //############ Procedura obs³ugi przerwania od przepe³nienia timera2 ############
@@ -187,6 +196,10 @@ ISR(TIMER2_OVF_vect) //SILNIK 2 %%%% POSUW
 //############ Procedura obs³ugi compare timera1 ############
 ISR(TIMER1_COMPA_vect)
 {
+	licz_ob1++;
+	if(licz_ob1==2)
+	{
+	licz_ob1=0;
 	seconds++;
 	if(seconds == 60)
 	{
@@ -200,7 +213,15 @@ ISR(TIMER1_COMPA_vect)
 	}
 	if(hours > 23)
 	hours = 0;
-	LCD_update_time();
+	timeChanged = true;
+	}
+	licz_ob++;
+	if (licz_ob==4)
+	{
+		licz_ob=0;
+		timeChanged05 = true;
+	}
+	
 }
 //##############################################################################
 
