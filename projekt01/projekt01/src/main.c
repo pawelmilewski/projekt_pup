@@ -7,12 +7,14 @@
 #include "interrupt/interrupt_avr8.h"
 #include "string.h"  
 #include "avr/interrupt.h"
-
+#define wADC0 PF0
+#define wADC2 PF2
 //zmienne
 unsigned long licz_ob;	//liczba biegow petli
 int licz_ob1;	//liczba biegow petli1
 volatile uint16_t pomiar_ADC0;//odczyt wartosci z przetwornika A/C - port ADC0 PF0
 volatile uint16_t pomiar_ADC2;//odczyt wartosci z przetwornika A/C - port ADC2 PF2
+volatile uint16_t wej_ADC=0; ////////// sprobowac uint8_t
 volatile uint8_t timer0=250;
 volatile uint8_t timer2=200;
 volatile uint8_t licznik=0;
@@ -25,8 +27,7 @@ unsigned char seconds = 0;
 bool timeChanged = true;
 bool timeChanged05 = true;
 bool ChangedADC = true;
-bool AktuADC0 = true;
-bool AktuADC2 = true;
+bool AktuADC = true;
 char time[] = "00:00:00";
 #define SET_HOUR		3
 #define SET_MINUTE		4
@@ -54,8 +55,10 @@ int main(void)
 		DDRC=0x7F;
 		PORTC=0x7F;
 		//ADC
+		DDRF &=~(1<<wADC0);
+		DDRF &=~(1<<wADC2);
 		//DDRF=0b00000000;
-		//PORTF=0b00000000;
+		PORTF=0b11111010;
 		//
 		PORTG = (1<<SET_HOUR | 1<<SET_MINUTE); //piny zegara
 		//######## konfiguracja ADC ##############
@@ -123,25 +126,22 @@ int main(void)
 			minutes = 0;
 		}
 
-		if (AktuADC0)
+		if (AktuADC)
 		{
-			ADCSRA |= (1<<ADSC);							//uruchomienie pojedynczej konwersji
-			while(ADCSRA & (1<<ADSC));						//czeka na zako?czenie konwersji
+
 			ADMUX=(0<<MUX3)|(0<<MUX2)|(0<<MUX1)|(0<<MUX0);			// wyb?r kana?u ADC0
+			while(ADCSRA & (1<<ADSC));						//czeka na zako?czenie konwersji
+			ADCSRA |= (1<<ADSC);							//uruchomienie pojedynczej konwersji
 			pomiar_ADC0=ADC;
 			ADMUX=0;
-			AktuADC0 = false;
-			
-		}
-		if (AktuADC2)
-		{
-			ADCSRA |= (1<<ADSC);							//uruchomienie pojedynczej konwersji
+			ADMUX=(0<<MUX3)|(0<<MUX2)|(1<<MUX1)|(0<<MUX0);			// wyb?r kana?u ADC1
 			while(ADCSRA & (1<<ADSC));						//czeka na zako?czenie konwersji
-			ADMUX=(0<<MUX3)|(0<<MUX2)|(1<<MUX1)|(0<<MUX0);			// wyb?r kana?u ADC0
+			ADCSRA |= (1<<ADSC);							//uruchomienie pojedynczej konwersji
 			pomiar_ADC2=ADC;
-			ADMUX=0;
-			AktuADC2 = false;
+			ADMUX=0;			
+			AktuADC = false;
 		}
+
 
 
 
@@ -158,7 +158,7 @@ int main(void)
 				sr_ADC0=(tablicarpm[1]+tablicarpm[2]+tablicarpm[3]+tablicarpm[4]+tablicarpm[5]+tablicarpm[6]+tablicarpm[7]+tablicarpm[8]+tablicarpm[9]+tablicarpm[10]+tablicarpm[11])/b;
 				sr_ADC2=(tablicawol[1]+tablicawol[2]+tablicawol[3]+tablicawol[4]+tablicawol[5]+tablicawol[6]+tablicawol[7]+tablicawol[8]+tablicawol[9]+tablicawol[10]+tablicawol[11])/b;
 				timer2=sr_ADC0/5;
-				obroty2=9375/(2*(255-timer2));
+				obroty2=9375/((255-timer2));
 				wolt=0.0138*sr_ADC2-0.0332;
 				b=0;					
 			}
@@ -217,15 +217,9 @@ ISR(TIMER0_OVF_vect) //SILNIK 1 %%%% POMPA
 	e++;
 	if (e==100)
 	{
-		AktuADC0 = true;
-	}
-	if (e==200)
-	{
-		e==0;
-		AktuADC2 = true;
-	}
-			
-		
+		e=0;
+		AktuADC = true;
+	}	
 }
 //##############################################################################
 //############ Procedura obs³ugi przerwania od przepe³nienia timera2 ############
