@@ -11,8 +11,8 @@
 //zmienne
 unsigned long licz_ob;	//liczba biegow petli
 int licz_ob1;	//liczba biegow petli1
-int pomiar_ADC0;//odczyt wartosci z przetwornika A/C - port ADC0
-int pomiar_ADC2;//odczyt wartosci z przetwornika A/C - port ADC2
+volatile uint16_t pomiar_ADC0;//odczyt wartosci z przetwornika A/C - port ADC0 PF0
+volatile uint16_t pomiar_ADC2;//odczyt wartosci z przetwornika A/C - port ADC2 PF2
 volatile uint8_t timer0=250;
 volatile uint8_t timer2=200;
 volatile uint8_t licznik=0;
@@ -24,6 +24,9 @@ unsigned char minutes = 0;
 unsigned char seconds = 0;
 bool timeChanged = true;
 bool timeChanged05 = true;
+bool ChangedADC = true;
+bool AktuADC0 = true;
+bool AktuADC2 = true;
 char time[] = "00:00:00";
 #define SET_HOUR		3
 #define SET_MINUTE		4
@@ -33,8 +36,11 @@ unsigned char i;
 #define ON_OFF_ALL PD0
 int obroty2;
 float wolt;
-int tablicarpm[5];
-
+int tablicarpm[16]={0};
+int tablicawol[16]={0};
+int sr_ADC0;
+int sr_ADC2;
+int a=0, b=0, c=0, d=0, e=0;
 void LCD_update_time();
 
 int main(void)
@@ -47,12 +53,17 @@ int main(void)
 		PORTG=0x02;
 		DDRC=0x7F;
 		PORTC=0x7F;
+		//ADC
+		//DDRF=0b00000000;
+		//PORTF=0b00000000;
+		//
 		PORTG = (1<<SET_HOUR | 1<<SET_MINUTE); //piny zegara
 		//######## konfiguracja ADC ##############
-		ADCSRA=(1<<ADEN)			//ustawienie bitu ADEN=1 - wlaczenie  przetwornika A/C
-		|(1<<ADPS0)	// ustawienie preskalera na 128 // ustawienie
-		|(1<<ADPS1)	// czestotliwosc taktowania przetwornika A/C, f=8Mhz/128
-		|(1<<ADPS2);
+		ADCSRA=(1<<ADEN)|(1<<ADPS0)|(1<<ADPS1)|(1<<ADPS2);
+		//ustawienie bitu ADEN=1 - wlaczenie  przetwornika A/C				
+		// ustawienie preskalera na 64 // ustawienie
+		// czestotliwosc taktowania przetwornika A/C, f=8Mhz/64
+		
 		ADMUX=(0<<REFS1)|(0<<REFS0); 	// wybor zewnetrznego napiecia odniesienia
 		//###########################################
 		//######## konfiguracja timera0 ##############
@@ -66,9 +77,9 @@ int main(void)
 		//###########################################		
 		//######## konfiguracja timera1 ##############
 		TCCR1B = (1<<CS12|1<<WGM12);
-		OCR1A = 15265-1; //dla 8Mhz ////// 0,5 s
+		OCR1A = 3053-1; //dla 8Mhz ////// 0,5 s
 		//###########################################	
-		sei();//Globalne uruchomienie przerwañ
+		
 	
 		SK1_EN_0; //poczatkowe wartosci
 		SK1_DIR_1;
@@ -86,7 +97,7 @@ int main(void)
 		LCD_WriteText("Ps.00rpm|Ak00.0V");
 		LCD_GoTo(8,1);
 		LCD_WriteText(time);
-		
+	sei();//Globalne uruchomienie przerwañ	
 	for(;;)
 	{
 		if(bit_is_clear(PINE, SPR_PRES))
@@ -111,43 +122,67 @@ int main(void)
 			if(minutes > 59)
 			minutes = 0;
 		}
-		//----
-		//##############USREDNIANIE
 
+		if (AktuADC0)
+		{
 			ADCSRA |= (1<<ADSC);							//uruchomienie pojedynczej konwersji
-			while(ADCSRA & (1<<ADSC));						//czeka na zakoñczenie konwersji
-			ADMUX=(0<<MUX3)|(0<<MUX2)|(0<<MUX1)|(0<<MUX0);			// wybór kana³u ADC0
-			//pomiar_ADC0=ADC;
-			pomiar_ADC0=1000;
-			ADMUX=(0<<MUX3)|(0<<MUX2)|(1<<MUX1)|(0<<MUX0); // wybór kana³u ADC2
-			ADCSRA |= (1<<ADSC);
-			while(ADCSRA & (1<<ADSC));
-		//for(int a, a++, a==5)
-		//{
-		//	tablicarpm[a]=pomiar_ADC0;
-		//}
-			if(timeChanged05)
-			{		
-				pomiar_ADC2=ADC;
-				//pomiar_ADC2=500;
-				timer2=pomiar_ADC0/5;
+			while(ADCSRA & (1<<ADSC));						//czeka na zako?czenie konwersji
+			ADMUX=(0<<MUX3)|(0<<MUX2)|(0<<MUX1)|(0<<MUX0);			// wyb?r kana?u ADC0
+			pomiar_ADC0=ADC;
+			ADMUX=0;
+			AktuADC0 = false;
+			
+		}
+		if (AktuADC2)
+		{
+			ADCSRA |= (1<<ADSC);							//uruchomienie pojedynczej konwersji
+			while(ADCSRA & (1<<ADSC));						//czeka na zako?czenie konwersji
+			ADMUX=(0<<MUX3)|(0<<MUX2)|(1<<MUX1)|(0<<MUX0);			// wyb?r kana?u ADC0
+			pomiar_ADC2=ADC;
+			ADMUX=0;
+			AktuADC2 = false;
+		}
+
+
+
+
+	
+		if (ChangedADC)
+		{
+
+			b++;
+			tablicarpm[b]=pomiar_ADC0;
+			tablicawol[b]=pomiar_ADC2;
+			if(b==11)
+			{	
+				sr_ADC0=(tablicarpm[1]+tablicarpm[2]+tablicarpm[3]+tablicarpm[4]+tablicarpm[5]+tablicarpm[6]+tablicarpm[7]+tablicarpm[8]+tablicarpm[9]+tablicarpm[10]+tablicarpm[11])/b;
+				sr_ADC2=(tablicawol[1]+tablicawol[2]+tablicawol[3]+tablicawol[4]+tablicawol[5]+tablicawol[6]+tablicawol[7]+tablicawol[8]+tablicawol[9]+tablicawol[10]+tablicawol[11])/b;
+				timer2=sr_ADC0/5;
 				obroty2=9375/(2*(255-timer2));
-				wolt=0.0138*pomiar_ADC2-0.0332;
-				LCD_GoTo(0,0);
-				LCD_WriteText("Ps.00rpm|Ak00.0V");
-				itoa(obroty2, bufor, 10);
-				LCD_GoTo(3,0);
-				LCD_WriteText(bufor);
-				dtostrf(wolt, 3, 1, bufor2);
-				LCD_GoTo(11,0);
-				LCD_WriteText(bufor2);
-				timeChanged05 = false;
+				wolt=0.0138*sr_ADC2-0.0332;
+				b=0;					
 			}
-			if(timeChanged)
-			{
-				LCD_update_time();
-				timeChanged = false;
-			}	
+			ChangedADC = false;
+		}
+
+		
+		if(timeChanged05)
+		{		
+			LCD_GoTo(0,0);
+			LCD_WriteText("Ps.00rpm|Ak00.0V");
+			itoa(obroty2, bufor, 10);
+			LCD_GoTo(3,0);
+			LCD_WriteText(bufor);
+			dtostrf(wolt, 3, 1, bufor2);
+			LCD_GoTo(11,0);
+			LCD_WriteText(bufor2);
+			timeChanged05 = false;
+		}
+		if(timeChanged)
+		{
+			LCD_update_time();
+			timeChanged = false;
+		}
 	}	
 }
 //-----funcja LCD_update_time	
@@ -177,10 +212,20 @@ void LCD_update_time()
 ISR(TIMER0_OVF_vect) //SILNIK 1 %%%% POMPA
 {
 	TCNT0 = timer0;			//Pocz¹tkowa wartoœæ licznika
-
-									//suma modulo 2 (XOR) stanu poprzedniego
-		PORTE ^=(1<<PE2);			//na porcie i pinu(zmiana stanu na przeciwny)				
-							
+								//suma modulo 2 (XOR) stanu poprzedniego
+	PORTE ^=(1<<PE2);			//na porcie i pinu(zmiana stanu na przeciwny)
+	e++;
+	if (e==100)
+	{
+		AktuADC0 = true;
+	}
+	if (e==200)
+	{
+		e==0;
+		AktuADC2 = true;
+	}
+			
+		
 }
 //##############################################################################
 //############ Procedura obs³ugi przerwania od przepe³nienia timera2 ############
@@ -197,32 +242,34 @@ ISR(TIMER2_OVF_vect) //SILNIK 2 %%%% POSUW
 ISR(TIMER1_COMPA_vect)
 {
 	licz_ob1++;
-	if(licz_ob1==2)
+	if(licz_ob1==10)
 	{
 	licz_ob1=0;
 	seconds++;
-	if(seconds == 60)
-	{
+		if(seconds == 60)
+		{
 		seconds = 0;
 		minutes++;
-	}
-	if(minutes == 60)
-	{
+		}
+		if(minutes == 60)
+		{
 		minutes = 0;
 		hours++;
-	}
-	if(hours > 23)
-	hours = 0;
+		}
+		if(hours > 23)
+		{
+		hours = 0;
+		}
 	timeChanged = true;
 	}
-	licz_ob++;
-	if (licz_ob==4)
+	//	
+	licz_ob++;	
+	if (licz_ob==20)
 	{
 		licz_ob=0;
 		timeChanged05 = true;
 	}
-	
+	ChangedADC = true;
+	//
 }
-//##############################################################################
-
 
