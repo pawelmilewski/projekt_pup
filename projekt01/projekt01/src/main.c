@@ -128,7 +128,6 @@ int main(void)
 
 		if (AktuADC)
 		{
-
 			ADMUX=(0<<MUX3)|(0<<MUX2)|(0<<MUX1)|(0<<MUX0);			// wyb?r kana?u ADC0
 			while(ADCSRA & (1<<ADSC));						//czeka na zako?czenie konwersji
 			ADCSRA |= (1<<ADSC);							//uruchomienie pojedynczej konwersji
@@ -142,11 +141,6 @@ int main(void)
 			AktuADC = false;
 		}
 
-
-
-
-
-	
 		if (ChangedADC)
 		{
 
