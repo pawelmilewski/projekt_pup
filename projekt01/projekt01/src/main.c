@@ -12,12 +12,13 @@
 //zmienne
 unsigned long licz_ob;	//liczba biegow petli
 int licz_ob1;	//liczba biegow petli1
-volatile uint16_t pomiar_ADC0;//odczyt wartosci z przetwornika A/C - port ADC0 PF0
-volatile uint16_t pomiar_ADC2;//odczyt wartosci z przetwornika A/C - port ADC2 PF2
+volatile uint16_t pomiar_ADC0=0;//odczyt wartosci z przetwornika A/C - port ADC0 PF0
+volatile uint16_t pomiar_ADC2=0;//odczyt wartosci z przetwornika A/C - port ADC2 PF2
 volatile uint16_t wej_ADC=0; ////////// sprobowac uint8_t
 volatile uint8_t timer0=250;
 volatile uint8_t timer2=200;
 volatile uint8_t licznik=0;
+volatile uint8_t odliczON_OFF;
 char bufor[4];
 char bufor2[8];
 //zmienne zegar
@@ -28,6 +29,9 @@ bool timeChanged = true;
 bool timeChanged05 = true;
 bool ChangedADC = true;
 bool AktuADC = true;
+bool ON_OFF = false;
+bool wylON_OFF = false;
+bool startON_OFF = true;
 char time[] = "00:00:00";
 #define SET_HOUR		3
 #define SET_MINUTE		4
@@ -54,9 +58,10 @@ int main(void)
 		PORTG=0x02;
 		DDRC=0x7F;
 		PORTC=0x7F;
+		DDRD=0b00111111;
+		PORTD=0b00111111;
 		//ADC
-		//DDRF=0b00000000;
-		PORTF=0b11111010;
+		PORTF=0xFA; //0b11111010;
 		//
 		PORTG = (1<<SET_HOUR | 1<<SET_MINUTE); //piny zegara
 		//######## konfiguracja ADC ##############
@@ -81,112 +86,148 @@ int main(void)
 		OCR1A = 3053-1; //dla 8Mhz ////// 0,5 s
 		//###########################################	
 		
-		SK1_EN_0; //poczatkowe wartosci
+		SK1_EN_1; //poczatkowe wartosci
 		SK1_DIR_1;
-		SK2_EN_0;
+		SK2_EN_1;
 		SK2_DIR_1;
-		TR_SPRE_1;
-		TR_WENT_1;
+		TR_SPRE_0;
+		TR_WENT_0;
 		TR_EOWZ_ZBIO_0;
 		TR_EOZW_SPOW_0;
 		TR_A_0;
-		TR_EOZR_TUBA_0;		
+		TR_EOZR_TUBA_0;
 		
 		LCD_Initalize();
 		LCD_GoTo(0,0);
 		LCD_WriteText("Ps000rpm|Ak00.0V");
+		LCD_GoTo(0,1);
+		LCD_WriteText("_______|");
 		LCD_GoTo(8,1);
 		LCD_WriteText(time);
-	sei();//Globalne uruchomienie przerwañ	
+	
 	for(;;)
 	{
-		if(bit_is_clear(PINE, SPR_PRES))
-		{
-			PG1_1;
-		}
-		if(bit_is_set(PINE, SPR_PRES))
-		{
-			PG1_0;		
-		}
 
-		//----ZEGAR
-		if(!(PING & (1<<SET_HOUR)))
+		if(bit_is_clear(PIND, ON_OFF_ALL)&~ON_OFF)
 		{
-			hours++;
-			if(hours > 23)
-			hours = 0;
+			ON_OFF=true;
 		}
-		if(!(PING & (1<<SET_MINUTE)))
+		if (wylON_OFF)
 		{
-			minutes++;
-			if(minutes > 59)
-			minutes = 0;
+			cli();
+			SK1_EN_1;
+			SK2_EN_1;
+			TR_SPRE_0;
+			TR_WENT_0;
+			TR_EOWZ_ZBIO_0;
+			TR_EOZW_SPOW_0;
+			TR_A_0;
+			TR_EOZR_TUBA_0
+			ON_OFF=false;
+			_delay_ms(3000);
+			wylON_OFF = false;
 		}
-
-		if (AktuADC)
+		if(ON_OFF)
 		{
-			ADMUX=(0<<MUX3)|(0<<MUX2)|(0<<MUX1)|(0<<MUX0);			// wyb?r kana?u ADC0
-			while(ADCSRA & (1<<ADSC));						//czeka na zako?czenie konwersji
-			ADCSRA |= (1<<ADSC);							//uruchomienie pojedynczej konwersji
-			pomiar_ADC0=ADC;
-			ADMUX=0;
-			ADMUX=(0<<MUX3)|(0<<MUX2)|(1<<MUX1)|(0<<MUX0);			// wyb?r kana?u ADC1
-			while(ADCSRA & (1<<ADSC));						//czeka na zako?czenie konwersji
-			ADCSRA |= (1<<ADSC);							//uruchomienie pojedynczej konwersji
-			pomiar_ADC2=ADC;
-			ADMUX=0;			
-			AktuADC = false;
-		}
-
-		if (ChangedADC)
-		{
-
-			b++;
-			tablicarpm[b]=pomiar_ADC0;
-			tablicawol[b]=pomiar_ADC2;
-			if(b==11)
-			{	
-				sr_ADC0=(tablicarpm[1]+tablicarpm[2]+tablicarpm[3]+tablicarpm[4]+tablicarpm[5]+tablicarpm[6]+tablicarpm[7]+tablicarpm[8]+tablicarpm[9]+tablicarpm[10]+tablicarpm[11])/b;
-				sr_ADC2=(tablicawol[1]+tablicawol[2]+tablicawol[3]+tablicawol[4]+tablicawol[5]+tablicawol[6]+tablicawol[7]+tablicawol[8]+tablicawol[9]+tablicawol[10]+tablicawol[11])/b;
-				timer2=sr_ADC0/5;
-				obroty2=9375/((255-timer2));
-				wolt=0.0138*sr_ADC2-0.0332;
-				b=0;					
-			}
-			ChangedADC = false;
-		}
-
-		
-		if(timeChanged05)
-		{		
-			LCD_GoTo(0,0);
-			LCD_WriteText("Ps00_rpm|Ak00.0V");
-			itoa(obroty2, bufor, 10);
-			LCD_GoTo(2,0);
-			LCD_WriteText(bufor);
-			dtostrf(wolt, 3, 1, bufor2);
-			LCD_GoTo(11,0);
-			LCD_WriteText(bufor2);
-			timeChanged05 = false;
-		}
-		
-		if(timeChanged)
-		{	
-			if (obroty2<38)
+			sei();//Globalne uruchomienie przerwañ
+			SK1_EN_0; //poczatkowe wartosci
+			SK1_DIR_1;
+			//SK2_EN_0;
+			SK2_DIR_1;
+			TR_SPRE_1;
+			TR_WENT_1;
+			TR_EOWZ_ZBIO_0;
+			TR_EOZW_SPOW_0;
+			TR_A_0;
+			TR_EOZR_TUBA_0;	
+			if(bit_is_clear(PINE, SPR_PRES))
 			{
-				SK2_EN_1;
+				PG1_1;
+			}
+			if(bit_is_set(PINE, SPR_PRES))
+			{
+				PG1_0;		
+			}
+
+			//----ZEGAR
+			if(!(PING & (1<<SET_HOUR)))
+			{
+				hours++;
+				if(hours > 23)
+				hours = 0;
+			}
+			if(!(PING & (1<<SET_MINUTE)))
+			{
+				minutes++;
+				if(minutes > 59)
+				minutes = 0;
+			}
+
+			if (AktuADC)
+			{
+				ADMUX=(0<<MUX3)|(0<<MUX2)|(0<<MUX1)|(0<<MUX0);			// wyb?r kana?u ADC0
+				while(ADCSRA & (1<<ADSC));						//czeka na zako?czenie konwersji
+				ADCSRA |= (1<<ADSC);							//uruchomienie pojedynczej konwersji
+				pomiar_ADC0=ADC;
+				ADMUX=0;
+				ADMUX=(0<<MUX3)|(0<<MUX2)|(1<<MUX1)|(0<<MUX0);			// wyb?r kana?u ADC1
+				while(ADCSRA & (1<<ADSC));						//czeka na zako?czenie konwersji
+				ADCSRA |= (1<<ADSC);							//uruchomienie pojedynczej konwersji
+				pomiar_ADC2=ADC;
+				ADMUX=0;			
+				AktuADC = false;
+			}
+
+			if (ChangedADC)
+			{
+
+				b++;
+				tablicarpm[b]=pomiar_ADC0;
+				tablicawol[b]=pomiar_ADC2;
+				if(b==11)
+				{	
+					sr_ADC0=(tablicarpm[1]+tablicarpm[2]+tablicarpm[3]+tablicarpm[4]+tablicarpm[5]+tablicarpm[6]+tablicarpm[7]+tablicarpm[8]+tablicarpm[9]+tablicarpm[10]+tablicarpm[11])/b;
+					sr_ADC2=(tablicawol[1]+tablicawol[2]+tablicawol[3]+tablicawol[4]+tablicawol[5]+tablicawol[6]+tablicawol[7]+tablicawol[8]+tablicawol[9]+tablicawol[10]+tablicawol[11])/b;
+					timer2=sr_ADC0/5;
+					obroty2=9375/((255-timer2));
+					wolt=0.0138*sr_ADC2-0.0332;
+					b=0;					
+				}
+				ChangedADC = false;
+			}
+
+		
+			if(timeChanged05)
+			{		
+				LCD_GoTo(0,0);
+				LCD_WriteText("Ps00_rpm|Ak00.0V");
+				itoa(obroty2, bufor, 10);
 				LCD_GoTo(2,0);
-				LCD_WriteText("000");
+				LCD_WriteText(bufor);
+				dtostrf(wolt, 3, 1, bufor2);
+				LCD_GoTo(11,0);
+				LCD_WriteText(bufor2);
+				timeChanged05 = false;
 			}
-			else
-			{
-				SK2_EN_0;
-			}			
-			LCD_update_time();
-			timeChanged = false;
-		}
-	}	
-}
+		
+			if(timeChanged)
+			{	
+				if (obroty2<38)
+				{
+					SK2_EN_1;
+					LCD_GoTo(2,0);
+					LCD_WriteText("000");
+				}
+				else
+				{
+					SK2_EN_0;
+				}			
+				LCD_update_time();
+				timeChanged = false;
+			}
+		}//if(ON_OFF)
+	}//for(;;)	
+}//main(void)
 //-----funcja LCD_update_time	
 void LCD_update_time()
 {
@@ -264,6 +305,16 @@ ISR(TIMER1_COMPA_vect)
 	{
 		licz_ob=0;
 		timeChanged05 = true;
+	}
+	
+	if(bit_is_clear(PIND, ON_OFF_ALL)&ON_OFF)
+	{
+		odliczON_OFF++;	
+		if (odliczON_OFF==30)
+		{
+			odliczON_OFF=0;
+			wylON_OFF = true;
+		}
 	}
 	ChangedADC = true;
 	//
