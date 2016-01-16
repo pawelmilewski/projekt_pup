@@ -31,13 +31,16 @@ bool ChangedADC = true;
 bool AktuADC = true;
 bool ON_OFF = false;
 bool wylON_OFF = false;
-bool startON_OFF = true;
+bool cisON_OFF = false;
+bool cispON_OFF = true;
+bool poczekaj = false;
 char time[] = "00:00:00";
 #define SET_HOUR		3
 #define SET_MINUTE		4
 unsigned char i; 
 //
 #define SPR_PRES PE6
+#define O_O_A PD1
 #define ON_OFF_ALL PD0
 int obroty2;
 float wolt;
@@ -54,12 +57,12 @@ int main(void)
 		PORTE=0x3C;
 		DDRB=0xFD;
 		PORTB=0xFD;
-		DDRG=0x02;
-		PORTG=0x02;
+		//DDRG=0b00000000;//0x02;
+		//PORTG=0b0000010;
 		DDRC=0x7F;
 		PORTC=0x7F;
-		DDRD=0b00111111;
-		PORTD=0b00111111;
+		DDRD=0b11111100;
+		PORTD=0b11111111;
 		//ADC
 		PORTF=0xFA; //0b11111010;
 		//
@@ -101,16 +104,18 @@ int main(void)
 		LCD_GoTo(0,0);
 		LCD_WriteText("Ps000rpm|Ak00.0V");
 		LCD_GoTo(0,1);
-		LCD_WriteText("_______|");
+		LCD_WriteText("Sp0|___|");
 		LCD_GoTo(8,1);
 		LCD_WriteText(time);
 	
 	for(;;)
 	{
 
-		if(bit_is_clear(PIND, ON_OFF_ALL)&~ON_OFF)
+		if(bit_is_clear(PIND, ON_OFF_ALL)&~ON_OFF&cisON_OFF)
 		{
 			ON_OFF=true;
+			cispON_OFF=true;
+
 		}
 		if (wylON_OFF)
 		{
@@ -122,11 +127,76 @@ int main(void)
 			TR_EOWZ_ZBIO_0;
 			TR_EOZW_SPOW_0;
 			TR_A_0;
-			TR_EOZR_TUBA_0
 			ON_OFF=false;
 			_delay_ms(3000);
+			TR_EOZR_TUBA_0;
 			wylON_OFF = false;
 		}
+		//SPR CISNIENIA
+		if(bit_is_clear(PINE, SPR_PRES))//cisnienie ok
+		{
+			TR_SPRE_0;
+			LCD_GoTo(2,1);
+			LCD_WriteText("0");
+			cisON_OFF=true;
+		}
+		if(bit_is_set(PINE, SPR_PRES)&&cispON_OFF)//cisnienie za niskie
+		{
+			TR_SPRE_1;
+			LCD_GoTo(2,1);
+			LCD_WriteText("1");		
+			if (poczekaj)
+			{
+				_delay_ms(8000);//czas potrzebny na uzupelnienie ukladu
+				poczekaj=false;
+			}
+			cisON_OFF=false;
+		}
+		//
+		if(bit_is_clear(PIND, O_O_A))
+		{
+			cli();
+			LCD_GoTo(2,0);
+			LCD_WriteText("000");			
+			TR_EOZR_TUBA_1;
+			LCD_GoTo(4,1);
+			LCD_WriteText("T__");
+			SK1_EN_1;
+			SK2_EN_1;
+			TR_SPRE_0;
+			LCD_GoTo(2,1);
+			LCD_WriteText("0");			
+			TR_WENT_0;
+			TR_EOWZ_ZBIO_0;
+			TR_EOZW_SPOW_0;
+			TR_A_0;
+			ON_OFF=false;
+			_delay_ms(5000);
+			//TR_EOZR_TUBA_0;
+			cispON_OFF=false;
+			if (bit_is_clear(PIND, O_O_A))
+			{	
+				TR_EOZR_TUBA_1;
+				TR_EOWZ_ZBIO_1;
+				TR_EOZW_SPOW_1;
+				LCD_GoTo(4,1);
+				LCD_WriteText("TZP");				
+				_delay_ms(4000);
+				TR_EOZR_TUBA_0;
+				TR_EOWZ_ZBIO_0;
+				TR_EOZW_SPOW_0;
+				LCD_GoTo(4,1);
+				LCD_WriteText("___");
+				poczekaj=true;			
+			}
+			TR_EOZR_TUBA_0;
+			cisON_OFF=true;
+			LCD_GoTo(4,1);
+			LCD_WriteText("___");
+			poczekaj=true;	
+		}
+		
+		
 		if(ON_OFF)
 		{
 			sei();//Globalne uruchomienie przerwañ
@@ -134,20 +204,13 @@ int main(void)
 			SK1_DIR_1;
 			//SK2_EN_0;
 			SK2_DIR_1;
-			TR_SPRE_1;
 			TR_WENT_1;
 			TR_EOWZ_ZBIO_0;
 			TR_EOZW_SPOW_0;
 			TR_A_0;
 			TR_EOZR_TUBA_0;	
-			if(bit_is_clear(PINE, SPR_PRES))
-			{
-				PG1_1;
-			}
-			if(bit_is_set(PINE, SPR_PRES))
-			{
-				PG1_0;		
-			}
+			
+			
 
 			//----ZEGAR
 			if(!(PING & (1<<SET_HOUR)))
