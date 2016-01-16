@@ -60,3 +60,10 @@
 #define  TR_SPRE_0 PORTC&=~(1<<PC1);
 #define  TR_WENT_1 PORTC|=(1<<PC0);
 #define  TR_WENT_0 PORTC&=~(1<<PC0);
+
+#define SET_HOUR	3 //zmienne do zmiany min/godz
+#define SET_MINUTE	4
+
+#define SPR_PRES PE6
+#define O_O_A PD1
+#define ON_OFF_ALL PD0

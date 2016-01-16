@@ -7,14 +7,11 @@
 #include "interrupt/interrupt_avr8.h"
 #include "string.h"  
 #include "avr/interrupt.h"
-#define wADC0 PF0
-#define wADC2 PF2
 //zmienne
-unsigned long licz_ob;	//liczba biegow petli
-int licz_ob1;	//liczba biegow petli1
+volatile uint8_t licz_ob;	//liczba biegow petli
+volatile uint8_t licz_ob1;	//liczba biegow petli1
 volatile uint16_t pomiar_ADC0=0;//odczyt wartosci z przetwornika A/C - port ADC0 PF0
 volatile uint16_t pomiar_ADC2=0;//odczyt wartosci z przetwornika A/C - port ADC2 PF2
-volatile uint16_t wej_ADC=0; ////////// sprobowac uint8_t
 volatile uint8_t timer0=250;
 volatile uint8_t timer2=200;
 volatile uint8_t licznik=0;
@@ -35,13 +32,8 @@ bool cisON_OFF = false;
 bool cispON_OFF = true;
 bool poczekaj = false;
 char time[] = "00:00:00";
-#define SET_HOUR		3
-#define SET_MINUTE		4
 unsigned char i; 
 //
-#define SPR_PRES PE6
-#define O_O_A PD1
-#define ON_OFF_ALL PD0
 int obroty2;
 float wolt;
 int tablicarpm[16]={0};
@@ -66,13 +58,12 @@ int main(void)
 		//ADC
 		PORTF=0xFA; //0b11111010;
 		//
-		PORTG = (1<<SET_HOUR | 1<<SET_MINUTE); //piny zegara
+		PORTG = (1<<SET_HOUR | 1<<SET_MINUTE); //piny zegara - zmiana wartosci
 		//######## konfiguracja ADC ##############
 		ADCSRA=(1<<ADEN)|(1<<ADPS0)|(1<<ADPS1)|(1<<ADPS2);
 		//ustawienie bitu ADEN=1 - wlaczenie  przetwornika A/C				
 		// ustawienie preskalera na 64 // ustawienie
 		// czestotliwosc taktowania przetwornika A/C, f=8Mhz/64
-		
 		ADMUX=(0<<REFS1)|(0<<REFS0); 	// wybor zewnetrznego napiecia odniesienia
 		//###########################################
 		//######## konfiguracja timera0 ##############
@@ -88,7 +79,6 @@ int main(void)
 		TCCR1B = (1<<CS12|1<<WGM12);
 		OCR1A = 3053-1; //dla 8Mhz ////// 0,5 s
 		//###########################################	
-		
 		SK1_EN_1; //poczatkowe wartosci
 		SK1_DIR_1;
 		SK2_EN_1;
@@ -99,25 +89,21 @@ int main(void)
 		TR_EOZW_SPOW_0;
 		TR_A_0;
 		TR_EOZR_TUBA_0;
-		
-		LCD_Initalize();
+		LCD_Initalize(); //inicjalizacja LCD
 		LCD_GoTo(0,0);
 		LCD_WriteText("Ps000rpm|Ak00.0V");
 		LCD_GoTo(0,1);
 		LCD_WriteText("Sp0|___|");
 		LCD_GoTo(8,1);
 		LCD_WriteText(time);
-	
 	for(;;)
 	{
-
-		if(bit_is_clear(PIND, ON_OFF_ALL)&~ON_OFF&cisON_OFF)
+		if(bit_is_clear(PIND, ON_OFF_ALL)&~ON_OFF&&cisON_OFF)//urruchomienie
 		{
 			ON_OFF=true;
 			cispON_OFF=true;
-
 		}
-		if (wylON_OFF)
+		if (wylON_OFF)//wylaczenie
 		{
 			cli();
 			SK1_EN_1;
@@ -127,6 +113,8 @@ int main(void)
 			TR_EOWZ_ZBIO_0;
 			TR_EOZW_SPOW_0;
 			TR_A_0;
+			LCD_GoTo(2,0);
+			LCD_WriteText("000");
 			ON_OFF=false;
 			_delay_ms(3000);
 			TR_EOZR_TUBA_0;
@@ -147,15 +135,15 @@ int main(void)
 			LCD_WriteText("1");		
 			if (poczekaj)
 			{
-				_delay_ms(8000);//czas potrzebny na uzupelnienie ukladu
+				_delay_ms(11000);	//czas potrzebny na uzupelnienie ukladu
 				poczekaj=false;
 			}
 			cisON_OFF=false;
 		}
 		//
-		if(bit_is_clear(PIND, O_O_A))
+		if(bit_is_clear(PIND, O_O_A))//upuszczenie powietrza, krtorkie - tuba, dlugie - wszystko
 		{
-			cli();
+			cli();//Globalne wylaczenie przerwañ
 			LCD_GoTo(2,0);
 			LCD_WriteText("000");			
 			TR_EOZR_TUBA_1;
@@ -172,7 +160,6 @@ int main(void)
 			TR_A_0;
 			ON_OFF=false;
 			_delay_ms(5000);
-			//TR_EOZR_TUBA_0;
 			cispON_OFF=false;
 			if (bit_is_clear(PIND, O_O_A))
 			{	
@@ -195,23 +182,17 @@ int main(void)
 			LCD_WriteText("___");
 			poczekaj=true;	
 		}
-		
-		
 		if(ON_OFF)
 		{
 			sei();//Globalne uruchomienie przerwañ
 			SK1_EN_0; //poczatkowe wartosci
 			SK1_DIR_1;
-			//SK2_EN_0;
 			SK2_DIR_1;
 			TR_WENT_1;
 			TR_EOWZ_ZBIO_0;
 			TR_EOZW_SPOW_0;
 			TR_A_0;
 			TR_EOZR_TUBA_0;	
-			
-			
-
 			//----ZEGAR
 			if(!(PING & (1<<SET_HOUR)))
 			{
@@ -240,10 +221,8 @@ int main(void)
 				ADMUX=0;			
 				AktuADC = false;
 			}
-
 			if (ChangedADC)
 			{
-
 				b++;
 				tablicarpm[b]=pomiar_ADC0;
 				tablicawol[b]=pomiar_ADC2;
@@ -258,8 +237,6 @@ int main(void)
 				}
 				ChangedADC = false;
 			}
-
-		
 			if(timeChanged05)
 			{		
 				LCD_GoTo(0,0);
@@ -272,7 +249,6 @@ int main(void)
 				LCD_WriteText(bufor2);
 				timeChanged05 = false;
 			}
-		
 			if(timeChanged)
 			{	
 				if (obroty2<38)
@@ -317,7 +293,7 @@ void LCD_update_time()
 //############ Procedura obs³ugi przerwania od przepe³nienia timera0 ############
 ISR(TIMER0_OVF_vect) //SILNIK 1 %%%% POMPA
 {
-	TCNT0 = timer0;			//Pocz¹tkowa wartoœæ licznika
+	TCNT0 = timer0;				//Pocz¹tkowa wartoœæ licznika
 								//suma modulo 2 (XOR) stanu poprzedniego
 	PORTE ^=(1<<PE2);			//na porcie i pinu(zmiana stanu na przeciwny)
 	e++;
@@ -331,8 +307,7 @@ ISR(TIMER0_OVF_vect) //SILNIK 1 %%%% POMPA
 //############ Procedura obs³ugi przerwania od przepe³nienia timera2 ############
 ISR(TIMER2_OVF_vect) //SILNIK 2 %%%% POSUW
 {
-	TCNT2 = timer2;			//Pocz¹tkowa wartoœæ licznika
-
+	TCNT2 = timer2;				//Pocz¹tkowa wartoœæ licznika
 								//suma modulo 2 (XOR) stanu poprzedniego
 	PORTE ^=(1<<PE5);			//na porcie i pinu(zmiana stanu na przeciwny) 
 	
@@ -381,5 +356,5 @@ ISR(TIMER1_COMPA_vect)
 	}
 	ChangedADC = true;
 	//
-}
+}//ISR(TIMER1_COMPA_vect)
 
