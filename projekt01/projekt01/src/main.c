@@ -7,21 +7,29 @@
 #include "interrupt/interrupt_avr8.h"
 #include "string.h"  
 #include "avr/interrupt.h"
-//zmienne
+//zmienne timer
 volatile uint8_t licz_ob;	//liczba biegow petli
 volatile uint8_t licz_ob1;	//liczba biegow petli1
 volatile uint16_t pomiar_ADC0=0;//odczyt wartosci z przetwornika A/C - port ADC0 PF0
 volatile uint16_t pomiar_ADC2=0;//odczyt wartosci z przetwornika A/C - port ADC2 PF2
 volatile uint8_t timer0=250;
 volatile uint8_t timer2=200;
-volatile uint8_t licznik=0;
 volatile uint8_t odliczON_OFF;
+//usrednianie
 char bufor[4];
 char bufor2[8];
+int sr_ADC0;
+int sr_ADC2;
+int tablicarpm[16]={0};
+int tablicawol[16]={0};
+int obroty2;
+float wolt;
 //zmienne zegar
 unsigned char hours = 0;
 unsigned char minutes = 0;
 unsigned char seconds = 0;
+char time[] = "00:00:00";
+//bool
 bool timeChanged = true;
 bool timeChanged05 = true;
 bool ChangedADC = true;
@@ -31,15 +39,7 @@ bool wylON_OFF = false;
 bool cisON_OFF = false;
 bool cispON_OFF = true;
 bool poczekaj = false;
-char time[] = "00:00:00";
-unsigned char i; 
 //
-int obroty2;
-float wolt;
-int tablicarpm[16]={0};
-int tablicawol[16]={0};
-int sr_ADC0;
-int sr_ADC2;
 int a=0, b=0, c=0, d=0, e=0;
 void LCD_update_time();
 
@@ -53,10 +53,10 @@ int main(void)
 		//PORTG=0b0000010;
 		DDRC=0x7F;
 		PORTC=0x7F;
-		DDRD=0b11111100;
-		PORTD=0b11111111;
+		DDRD=0xFC;
+		PORTD=0xFF;
 		//ADC
-		PORTF=0xFA; //0b11111010;
+		PORTF=0xFA;
 		//
 		PORTG = (1<<SET_HOUR | 1<<SET_MINUTE); //piny zegara - zmiana wartosci
 		//######## konfiguracja ADC ##############
@@ -98,10 +98,11 @@ int main(void)
 		LCD_WriteText(time);
 	for(;;)
 	{
-		if(bit_is_clear(PIND, ON_OFF_ALL)&~ON_OFF&&cisON_OFF)//urruchomienie
+		if(bit_is_clear(PIND, ON_OFF_ALL)&~ON_OFF&&cisON_OFF&&bit_is_clear(PINE, SPR_PRES))//uruchomienie
 		{
-			ON_OFF=true;
-			cispON_OFF=true;
+			ON_OFF=true;//gl petla
+			cispON_OFF=true;//flaga spr cisnienia
+			poczekaj=false;//flaga
 		}
 		if (wylON_OFF)//wylaczenie
 		{
@@ -127,6 +128,7 @@ int main(void)
 			LCD_GoTo(2,1);
 			LCD_WriteText("0");
 			cisON_OFF=true;
+			poczekaj=false;
 		}
 		if(bit_is_set(PINE, SPR_PRES)&&cispON_OFF)//cisnienie za niskie
 		{
@@ -135,7 +137,7 @@ int main(void)
 			LCD_WriteText("1");		
 			if (poczekaj)
 			{
-				_delay_ms(11000);	//czas potrzebny na uzupelnienie ukladu
+				_delay_ms(5000);	//czas potrzebny na uzupelnienie ukladu
 				poczekaj=false;
 			}
 			cisON_OFF=false;
@@ -173,14 +175,16 @@ int main(void)
 				TR_EOWZ_ZBIO_0;
 				TR_EOZW_SPOW_0;
 				LCD_GoTo(4,1);
-				LCD_WriteText("___");
-				poczekaj=true;			
+				LCD_WriteText("___");	
 			}
 			TR_EOZR_TUBA_0;
-			cisON_OFF=true;
 			LCD_GoTo(4,1);
 			LCD_WriteText("___");
-			poczekaj=true;	
+			poczekaj=true;
+			ON_OFF = false;
+			wylON_OFF = false;
+			cisON_OFF = false;
+			cispON_OFF = true;	
 		}
 		if(ON_OFF)
 		{
@@ -344,7 +348,6 @@ ISR(TIMER1_COMPA_vect)
 		licz_ob=0;
 		timeChanged05 = true;
 	}
-	
 	if(bit_is_clear(PIND, ON_OFF_ALL)&ON_OFF)
 	{
 		odliczON_OFF++;	
