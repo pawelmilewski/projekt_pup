@@ -149,6 +149,7 @@ int main(void)
 			LCD_GoTo(2,0);
 			LCD_WriteText("000");			
 			TR_EOZR_TUBA_1;
+			TR_EOZW_SPOW_1;
 			LCD_GoTo(4,1);
 			LCD_WriteText("T__");
 			SK1_EN_1;
@@ -158,7 +159,6 @@ int main(void)
 			LCD_WriteText("0");			
 			TR_WENT_0;
 			TR_EOWZ_ZBIO_0;
-			TR_EOZW_SPOW_0;
 			TR_A_0;
 			ON_OFF=false;
 			_delay_ms(5000);
@@ -178,6 +178,8 @@ int main(void)
 				LCD_WriteText("___");	
 			}
 			TR_EOZR_TUBA_0;
+			TR_EOWZ_ZBIO_0;
+			TR_EOZW_SPOW_0;
 			LCD_GoTo(4,1);
 			LCD_WriteText("___");
 			poczekaj=true;
@@ -196,7 +198,7 @@ int main(void)
 			TR_EOWZ_ZBIO_0;
 			TR_EOZW_SPOW_0;
 			TR_A_0;
-			TR_EOZR_TUBA_0;	
+			TR_EOZR_TUBA_1;	
 			//----ZEGAR
 			if(!(PING & (1<<SET_HOUR)))
 			{
@@ -271,7 +273,7 @@ int main(void)
 		}//if(ON_OFF)
 	}//for(;;)	
 }//main(void)
-//-----funcja LCD_update_time	
+//-----funcja LCD_update_time	### aktualizacja czasu
 void LCD_update_time()
 {
 	unsigned char temp;
